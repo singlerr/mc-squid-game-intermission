@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "intermission",
+  "version": "${version}",
+  "name": "intermission",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/rlgl-intermission/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "io.github.singlerr.im.client.IntermissionClient"
+    ],
+    "main": [
+      "io.github.singlerr.im.Intermission"
+    ]
+  },
+  "mixins": [
+    "intermission.mixins.json",
+    {
+      "config": "intermission.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
