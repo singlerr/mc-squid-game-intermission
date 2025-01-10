@@ -10,10 +10,12 @@ import icyllis.modernui.view.MotionEvent;
 import icyllis.modernui.view.View;
 import io.github.singlerr.im.client.sounds.LoopSoundInstance;
 import java.util.function.Consumer;
+import lombok.extern.slf4j.Slf4j;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundEvent;
 
+@Slf4j
 public class DalgonaView extends View implements View.OnGenericMotionListener {
 
   private final Rect imageSize;
@@ -50,8 +52,12 @@ public class DalgonaView extends View implements View.OnGenericMotionListener {
 
 
   private float distance(float[] a, float[] b) {
-    return (float) Math.sqrt((b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) * (b[1] - a[1]) +
-        (b[2] - a[2]) * (b[2] - a[2]));
+    int rmean = (int) (a[0] + b[0]) / 2;
+    int r_ = (int) (a[0] - b[0]);
+    int g_ = (int) (a[1] - b[1]);
+    int b_ = (int) (a[2] - b[2]);
+    return (float) Math.sqrt(
+        (((512 + rmean) * r_ * r_) >> 8) + 4 * g_ * g_ + (((767 - rmean) * b_ * b_) >> 8));
   }
 
   @Override
@@ -64,9 +70,15 @@ public class DalgonaView extends View implements View.OnGenericMotionListener {
   protected void onDraw(Canvas canvas) {
     Paint paint = Paint.obtain();
     int centerX = getWidth() / 2;
+    int centerY = getHeight() / 2;
+
     int left = centerX - getHeight() / 2;
+    Rect targetSize = new Rect(left, getTop(), left + getHeight(), getBottom());
+    float radius = (targetSize.height() / 2f) * 1.1f;
+    paint.setRGBA(107, 104, 102, 255);
+    canvas.drawCircle(centerX, centerY, radius, paint);
+
     if (!completed) {
-      Rect targetSize = new Rect(left, getTop(), left + getHeight(), getBottom());
       canvas.drawImage(image, imageSize, targetSize, paint);
       canvas.save();
     }
@@ -90,27 +102,22 @@ public class DalgonaView extends View implements View.OnGenericMotionListener {
       return;
     }
     if (checkKill(relativeX, relativeY)) {
-      currentKillCount++;
+      completed = true;
+      callback.accept(false);
+      Minecraft.getInstance().getSoundManager().stop(scratchSound);
     }
-
-//    if (currentKillCount >= killCount) {
-//      completed = true;
-//      message.setText("실패!");
-//      message.setTextColor(0xe00000);
-//      invalidate();
-//      postDelayed(() -> {
-//        Minecraft.getInstance().setScreen(null);
-//        ClientPlayNetworking.send(new PacketDalgonaResult(false));
-//      }, 1500L);
-//    }
     buffer.setColor4f((int) relativeX, (int) relativeY, new float[] {0, 0, 0, 0});
   }
-
 
   private boolean checkKill(double x, double y) {
     float[] t = new float[4];
     original.getColor4f((int) x, (int) y, t);
-    return distance(killColor, t) > 100;
+    t = new float[] {t[0] * 255, t[1] * 255, t[2] * 255, t[3] * 255};
+    float d = distance(killColor, t);
+    if (d < 10) {
+      currentKillCount++;
+    }
+    return currentKillCount >= killCount;
   }
 
   private float getTone(float[] color) {
@@ -133,6 +140,7 @@ public class DalgonaView extends View implements View.OnGenericMotionListener {
         }
       }
     }
+    System.out.println(count);
     return count <= threshold;
   }
 
@@ -153,6 +161,7 @@ public class DalgonaView extends View implements View.OnGenericMotionListener {
       if (checkCompletion(buffer)) {
         completed = true;
         callback.accept(true);
+        Minecraft.getInstance().getSoundManager().stop(scratchSound);
       }
       invalidate();
     }

@@ -1,30 +1,50 @@
 package io.github.singlerr.im.client.menu.views;
 
-import com.mojang.blaze3d.platform.InputConstants;
+import icyllis.modernui.animation.Animator;
+import icyllis.modernui.animation.AnimatorListener;
 import icyllis.modernui.animation.ValueAnimator;
 import icyllis.modernui.core.Context;
 import icyllis.modernui.graphics.BlendMode;
 import icyllis.modernui.graphics.Canvas;
 import icyllis.modernui.graphics.Paint;
 import icyllis.modernui.graphics.PointF;
-import icyllis.modernui.view.KeyEvent;
+import icyllis.modernui.view.MotionEvent;
 import icyllis.modernui.view.View;
+import java.util.function.Consumer;
+import lombok.extern.slf4j.Slf4j;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
-public class RadialView extends View implements View.OnKeyListener {
+@Slf4j
+public class RadialView extends View {
 
   private final ValueAnimator animator;
   private final float startAngle;
   private final float angleAmount;
+  private final Consumer<Boolean> callback;
   private float targetAngle = 0;
+  private boolean enabled;
 
-  public RadialView(Context context, long duration, float startAngle, float angleAmount) {
+  public RadialView(Context context, long duration, float startAngle, float angleAmount,
+                    Consumer<Boolean> callback) {
     super(context);
+    this.callback = callback;
+    this.enabled = true;
     this.animator = ValueAnimator.ofFloat(0, Mth.TWO_PI);
+    this.animator.addListener(new AnimatorListener() {
+      @Override
+      public void onAnimationEnd(Animator animation, boolean isReverse) {
+        if (enabled) {
+          callback.accept(false);
+        }
+      }
+    });
     this.animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override
       public void onAnimationUpdate(@NotNull ValueAnimator animation) {
+        if (!enabled) {
+          return;
+        }
         targetAngle = (float) animation.getAnimatedValue();
         invalidate();
       }
@@ -46,7 +66,7 @@ public class RadialView extends View implements View.OnKeyListener {
     paint.setStroke(true);
     float height = getHeight();
     float maxRadius = height * 0.4f;
-    float minRadius = maxRadius - 30f;
+    float minRadius = maxRadius - dp(30);
     float centerX = getWidth() / 2f;
     float centerY = getHeight() / 2f;
 
@@ -66,8 +86,8 @@ public class RadialView extends View implements View.OnKeyListener {
     paint.setStrokeWidth(5);
     paint.setRGBA(255, 255, 255, 255);
     PointF t1 = new PointF(centerX, centerY);
-    PointF t2 = new PointF(centerX + maxRadius * Mth.cos(targetAngle),
-        centerY + maxRadius * Mth.sin(targetAngle));
+    PointF t2 = new PointF(centerX + maxRadius * Mth.cos(targetAngle - Mth.HALF_PI),
+        centerY + maxRadius * Mth.sin(targetAngle - Mth.HALF_PI));
     canvas.drawLine(t1, t2, paint);
     canvas.save();
     paint.recycle();
@@ -75,10 +95,19 @@ public class RadialView extends View implements View.OnKeyListener {
 
 
   @Override
-  public boolean onKey(View v, int keyCode, KeyEvent event) {
-    if (keyCode == InputConstants.KEY_SPACE) {
+  public boolean onGenericMotionEvent(MotionEvent event) {
+    if (!enabled) {
+      return false;
+    }
+    if (event.getAction() == MotionEvent.ACTION_BUTTON_PRESS) {
+      enabled = false;
+      animator.cancel();
 
+      float angle = (float) Math.toDegrees(targetAngle - Mth.HALF_PI);
+      callback.accept(angle >= startAngle && angle <= (startAngle + angleAmount));
     }
     return false;
   }
+
+
 }

@@ -20,14 +20,16 @@ import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 
 @RequiredArgsConstructor
 public final class DalgonaMenu extends Fragment {
 
-  private static final int GREEN = 0x1DE807;
-  private static final int RED = 0xEB0E0E;
   private final String dalgonaImagePath;
+  private final int threshold;
+
   private DalgonaView dalgonaView;
   private Bitmap dalgonaImage;
   private Bitmap bufferImage;
@@ -59,11 +61,14 @@ public final class DalgonaMenu extends Fragment {
     msg.setTextSize(base.dp(80));
     msg.setGravity(Gravity.CENTER);
     msg.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+    msg.setTypeface(IntermissionClient.NANUM_FONT);
     Consumer<Boolean> resultHandler = (result) -> {
       if (result) {
         msg.setText("성공!");
       } else {
         msg.setText("실패!");
+        Minecraft.getInstance().getSoundManager()
+            .play(SimpleSoundInstance.forUI(SoundEvents.TURTLE_EGG_CRACK, 1.0f, 1.0f));
       }
       base.removeView(dalgonaView);
       base.addView(msg);
@@ -77,8 +82,8 @@ public final class DalgonaMenu extends Fragment {
     dalgonaView = dalgonaView == null ?
         new DalgonaView(requireContext(), IntermissionClient.SCRATCH_SOUND_EVENT, dalgonaImage,
             bufferImage,
-            new float[] {199 * 1.2f, 128 * 1.2f, 41 * 1.2f, 255}, new float[] {255, 255, 255, 255},
-            110, 50, resultHandler) : dalgonaView;
+            new float[] {160, 85, 10, 255}, new float[] {255, 255, 255, 255},
+            threshold, 10, resultHandler) : dalgonaView;
     {
       LinearLayout.LayoutParams params =
           new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,

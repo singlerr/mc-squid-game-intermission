@@ -15,6 +15,7 @@ public final class PacketDalgonaRequest implements FabricPacket {
           Intermission.ID, "dalgona_request"), PacketDalgonaRequest::new);
 
   private String dalgonaImagePath;
+  private int threshold;
 
   public PacketDalgonaRequest(FriendlyByteBuf buf) {
     read(buf);
@@ -22,11 +23,13 @@ public final class PacketDalgonaRequest implements FabricPacket {
 
   private void read(FriendlyByteBuf buf) {
     dalgonaImagePath = buf.readUtf();
+    threshold = buf.readInt();
   }
 
   @Override
   public void write(FriendlyByteBuf buf) {
     buf.writeUtf(dalgonaImagePath);
+    buf.writeInt(threshold);
   }
 
   @Override

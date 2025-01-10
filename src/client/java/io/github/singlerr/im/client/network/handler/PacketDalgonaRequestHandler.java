@@ -9,9 +9,10 @@ import net.minecraft.client.player.LocalPlayer;
 
 public final class PacketDalgonaRequestHandler
     implements ClientPlayNetworking.PlayPacketHandler<PacketDalgonaRequest> {
+
   @Override
   public void receive(PacketDalgonaRequest packet, LocalPlayer player,
                       PacketSender responseSender) {
-    MuiFabricApi.openScreen(new DalgonaMenu(packet.getDalgonaImagePath()));
+    MuiFabricApi.openScreen(new DalgonaMenu(packet.getDalgonaImagePath(), packet.getThreshold()));
   }
 }
