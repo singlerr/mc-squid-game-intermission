@@ -20,9 +20,7 @@ import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
 
 @RequiredArgsConstructor
 public final class DalgonaMenu extends Fragment {
@@ -67,8 +65,6 @@ public final class DalgonaMenu extends Fragment {
         msg.setText("성공!");
       } else {
         msg.setText("실패!");
-        Minecraft.getInstance().getSoundManager()
-            .play(SimpleSoundInstance.forUI(SoundEvents.TURTLE_EGG_CRACK, 1.0f, 1.0f));
       }
       base.removeView(dalgonaView);
       base.addView(msg);

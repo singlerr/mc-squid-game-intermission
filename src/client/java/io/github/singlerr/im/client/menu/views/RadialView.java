@@ -99,6 +99,7 @@ public class RadialView extends View {
     if (!enabled) {
       return false;
     }
+
     if (event.getAction() == MotionEvent.ACTION_BUTTON_PRESS) {
       enabled = false;
       animator.cancel();

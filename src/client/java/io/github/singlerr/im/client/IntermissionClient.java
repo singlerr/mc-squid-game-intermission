@@ -2,10 +2,8 @@ package io.github.singlerr.im.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import icyllis.modernui.graphics.text.FontFamily;
-import icyllis.modernui.mc.fabric.MuiFabricApi;
 import icyllis.modernui.text.Typeface;
 import io.github.singlerr.im.Intermission;
-import io.github.singlerr.im.client.menu.DalgonaMenu;
 import io.github.singlerr.im.client.network.PacketDalgonaRequest;
 import io.github.singlerr.im.client.network.PacketIntermissionRequest;
 import io.github.singlerr.im.client.network.PacketRequestSync;
@@ -16,7 +14,6 @@ import java.security.SecureRandom;
 import lombok.extern.slf4j.Slf4j;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
@@ -69,14 +66,14 @@ public final class IntermissionClient implements ClientModInitializer {
             }
           }
         });
-    ClientTickEvents.START_CLIENT_TICK.register(new ClientTickEvents.StartTick() {
-      @Override
-      public void onStartTick(Minecraft client) {
-        if (OPEN_MENU.isDown()) {
-          MuiFabricApi.openScreen(new DalgonaMenu("images/triangle.png", 250));
-        }
-      }
-    });
+//    ClientTickEvents.START_CLIENT_TICK.register(new ClientTickEvents.StartTick() {
+//      @Override
+//      public void onStartTick(Minecraft client) {
+//        if (OPEN_MENU.isDown()) {
+//          MuiFabricApi.openScreen(new DalgonaMenu("images/circle.png", 250));
+//        }
+//      }
+//    });
     ClientEntityEvents.ENTITY_LOAD.register(this::requestNameSync);
     Registry.register(BuiltInRegistries.SOUND_EVENT, SCRATCH_SOUND, SCRATCH_SOUND_EVENT);
     ClientPlayNetworking.registerGlobalReceiver(PacketDalgonaRequest.TYPE,
@@ -92,6 +89,5 @@ public final class IntermissionClient implements ClientModInitializer {
 
     ClientPlayNetworking.send(new PacketRequestSync(player.getUUID()));
   }
-
 
 }

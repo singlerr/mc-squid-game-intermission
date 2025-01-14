@@ -12,8 +12,10 @@ import io.github.singlerr.im.client.sounds.LoopSoundInstance;
 import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 
 @Slf4j
 public class DalgonaView extends View implements View.OnGenericMotionListener {
@@ -72,13 +74,14 @@ public class DalgonaView extends View implements View.OnGenericMotionListener {
     int centerX = getWidth() / 2;
     int centerY = getHeight() / 2;
 
-    int left = centerX - getHeight() / 2;
-    Rect targetSize = new Rect(left, getTop(), left + getHeight(), getBottom());
-    float radius = (targetSize.height() / 2f) * 1.1f;
-    paint.setRGBA(107, 104, 102, 255);
-    canvas.drawCircle(centerX, centerY, radius, paint);
 
     if (!completed) {
+      int left = centerX - getHeight() / 2;
+      Rect targetSize = new Rect(left, getTop(), left + getHeight(), getBottom());
+      float radius = (targetSize.height() / 2f) * 1.1f;
+      paint.setRGBA(107, 104, 102, 255);
+      canvas.drawCircle(centerX, centerY, radius, paint);
+
       canvas.drawImage(image, imageSize, targetSize, paint);
       canvas.save();
     }
@@ -105,6 +108,8 @@ public class DalgonaView extends View implements View.OnGenericMotionListener {
       completed = true;
       callback.accept(false);
       Minecraft.getInstance().getSoundManager().stop(scratchSound);
+      Minecraft.getInstance().getSoundManager()
+          .play(SimpleSoundInstance.forUI(SoundEvents.TURTLE_EGG_CRACK, 1.0f, 1.0f));
     }
     buffer.setColor4f((int) relativeX, (int) relativeY, new float[] {0, 0, 0, 0});
   }
@@ -140,7 +145,7 @@ public class DalgonaView extends View implements View.OnGenericMotionListener {
         }
       }
     }
-    System.out.println(count);
+
     return count <= threshold;
   }
 

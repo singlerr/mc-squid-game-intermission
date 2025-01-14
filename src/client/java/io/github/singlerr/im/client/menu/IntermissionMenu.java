@@ -16,6 +16,8 @@ import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.sounds.SoundEvents;
 
 @RequiredArgsConstructor
 public final class IntermissionMenu extends Fragment {
@@ -40,8 +42,12 @@ public final class IntermissionMenu extends Fragment {
     Consumer<Boolean> resultHandler = (result) -> {
       if (result) {
         msg.setText("성공!");
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(
+            SoundEvents.EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f));
       } else {
         msg.setText("실패!");
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(
+            SoundEvents.TURTLE_EGG_CRACK, 1.0f, 1.0f));
       }
       base.removeView(radialView);
       base.addView(msg);
