@@ -8,11 +8,11 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.player.LocalPlayer;
 
 public final class PacketIntermissionRequestHandler
-    implements ClientPlayNetworking.PlayPacketHandler<PacketIntermissionRequest> {
-  @Override
-  public void receive(PacketIntermissionRequest packet, LocalPlayer player,
-                      PacketSender responseSender) {
-    MuiFabricApi.openScreen(
-        new IntermissionMenu(packet.getDuration(), packet.getStartAngle(), packet.getSweepAngle()));
-  }
+        implements ClientPlayNetworking.PlayPacketHandler<PacketIntermissionRequest> {
+    @Override
+    public void receive(PacketIntermissionRequest packet, LocalPlayer player,
+                        PacketSender responseSender) {
+        MuiFabricApi.openScreen(
+                new IntermissionMenu(packet.getDuration(), packet.getStartAngle(), packet.getSweepAngle()));
+    }
 }

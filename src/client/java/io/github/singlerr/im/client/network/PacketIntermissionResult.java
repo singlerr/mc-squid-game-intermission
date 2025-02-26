@@ -12,27 +12,27 @@ import net.minecraft.resources.ResourceLocation;
 @AllArgsConstructor
 public final class PacketIntermissionResult implements FabricPacket {
 
-  public static final PacketType<PacketIntermissionResult> TYPE =
-      PacketType.create(new ResourceLocation(
-          Intermission.ID, "intermission_result"), PacketIntermissionResult::new);
+    public static final PacketType<PacketIntermissionResult> TYPE =
+            PacketType.create(new ResourceLocation(
+                    Intermission.ID, "intermission_result"), PacketIntermissionResult::new);
 
-  private boolean success;
+    private boolean success;
 
-  public PacketIntermissionResult(FriendlyByteBuf buf) {
-    read(buf);
-  }
+    public PacketIntermissionResult(FriendlyByteBuf buf) {
+        read(buf);
+    }
 
-  public void read(FriendlyByteBuf buf) {
-    this.success = buf.readBoolean();
-  }
+    public void read(FriendlyByteBuf buf) {
+        this.success = buf.readBoolean();
+    }
 
-  @Override
-  public void write(FriendlyByteBuf buf) {
-    buf.writeBoolean(this.success);
-  }
+    @Override
+    public void write(FriendlyByteBuf buf) {
+        buf.writeBoolean(this.success);
+    }
 
-  @Override
-  public PacketType<?> getType() {
-    return TYPE;
-  }
+    @Override
+    public PacketType<?> getType() {
+        return TYPE;
+    }
 }

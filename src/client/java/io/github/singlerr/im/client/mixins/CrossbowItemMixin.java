@@ -16,25 +16,25 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(CrossbowItem.class)
 public abstract class CrossbowItemMixin {
 
-  @Inject(method = "use", at = @At("HEAD"))
-  private void ignoreArrowItem(Level level, Player player, InteractionHand interactionHand,
-                               CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir,
-                               @Share("instaBuild")
-                               LocalBooleanRef ref) {
-    if (!player.getAbilities().instabuild) {
-      player.getAbilities().instabuild = true;
-      ref.set(true);
-    } else {
-      ref.set(false);
+    @Inject(method = "use", at = @At("HEAD"))
+    private void ignoreArrowItem(Level level, Player player, InteractionHand interactionHand,
+                                 CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir,
+                                 @Share("instaBuild")
+                                 LocalBooleanRef ref) {
+        if (!player.getAbilities().instabuild) {
+            player.getAbilities().instabuild = true;
+            ref.set(true);
+        } else {
+            ref.set(false);
+        }
     }
-  }
 
-  @Inject(method = "use", at = @At("RETURN"))
-  private void resetState(Level level, Player player, InteractionHand interactionHand,
-                          CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir,
-                          @Share("instabuild") LocalBooleanRef ref) {
-    if (ref.get()) {
-      player.getAbilities().instabuild = false;
+    @Inject(method = "use", at = @At("RETURN"))
+    private void resetState(Level level, Player player, InteractionHand interactionHand,
+                            CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir,
+                            @Share("instabuild") LocalBooleanRef ref) {
+        if (ref.get()) {
+            player.getAbilities().instabuild = false;
+        }
     }
-  }
 }

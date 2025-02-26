@@ -9,8 +9,6 @@ import io.github.singlerr.im.client.network.PacketIntermissionRequest;
 import io.github.singlerr.im.client.network.PacketRequestSync;
 import io.github.singlerr.im.client.network.handler.PacketDalgonaRequestHandler;
 import io.github.singlerr.im.client.network.handler.PacketIntermissionRequestHandler;
-import java.io.InputStream;
-import java.security.SecureRandom;
 import lombok.extern.slf4j.Slf4j;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
@@ -30,64 +28,58 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
+import java.io.InputStream;
+
 @Slf4j
 public final class IntermissionClient implements ClientModInitializer {
-  public static final KeyMapping OPEN_MENU =
-      new KeyMapping("Open Menu", InputConstants.KEY_B, "Menu");
-  public static final ResourceLocation SCRATCH_SOUND =
-      new ResourceLocation(Intermission.ID, "scratch");
-  public static final SoundEvent SCRATCH_SOUND_EVENT =
-      SoundEvent.createVariableRangeEvent(SCRATCH_SOUND);
-  private static final SecureRandom random = new SecureRandom();
-  public static Typeface NANUM_FONT;
+    public static final KeyMapping OPEN_MENU =
+            new KeyMapping("Open Menu", InputConstants.KEY_B, "Menu");
+    public static final ResourceLocation SCRATCH_SOUND =
+            new ResourceLocation(Intermission.ID, "scratch");
+    public static final SoundEvent SCRATCH_SOUND_EVENT =
+            SoundEvent.createVariableRangeEvent(SCRATCH_SOUND);
+    public static Typeface NANUM_FONT;
 
-  public IntermissionClient() {
-    KeyBindingHelper.registerKeyBinding(OPEN_MENU);
-  }
-
-  @Override
-  public void onInitializeClient() {
-
-    ResourceManagerHelperImpl.get(PackType.CLIENT_RESOURCES).registerReloadListener(
-        new SimpleSynchronousResourceReloadListener() {
-          @Override
-          public ResourceLocation getFabricId() {
-            return new ResourceLocation("sgadminui", "client_resources");
-          }
-
-          @Override
-          public void onResourceManagerReload(ResourceManager resourceManager) {
-            try (InputStream in = Minecraft.getInstance().getResourceManager()
-                .open(new ResourceLocation("intermission", "font/nanum_square_neo.ttf"))) {
-              FontFamily font = FontFamily.createFamily(in, false);
-              NANUM_FONT = Typeface.createTypeface(font);
-            } catch (Exception e) {
-              throw new RuntimeException(e);
-            }
-          }
-        });
-//    ClientTickEvents.START_CLIENT_TICK.register(new ClientTickEvents.StartTick() {
-//      @Override
-//      public void onStartTick(Minecraft client) {
-//        if (OPEN_MENU.isDown()) {
-//          MuiFabricApi.openScreen(new DalgonaMenu("images/circle.png", 250));
-//        }
-//      }
-//    });
-    ClientEntityEvents.ENTITY_LOAD.register(this::requestNameSync);
-    Registry.register(BuiltInRegistries.SOUND_EVENT, SCRATCH_SOUND, SCRATCH_SOUND_EVENT);
-    ClientPlayNetworking.registerGlobalReceiver(PacketDalgonaRequest.TYPE,
-        new PacketDalgonaRequestHandler());
-    ClientPlayNetworking.registerGlobalReceiver(PacketIntermissionRequest.TYPE,
-        new PacketIntermissionRequestHandler());
-  }
-
-  private void requestNameSync(Entity entity, ClientLevel level) {
-    if (!(entity instanceof Player player)) {
-      return;
+    public IntermissionClient() {
+        KeyBindingHelper.registerKeyBinding(OPEN_MENU);
     }
 
-    ClientPlayNetworking.send(new PacketRequestSync(player.getUUID()));
-  }
+    @Override
+    public void onInitializeClient() {
+
+        ResourceManagerHelperImpl.get(PackType.CLIENT_RESOURCES).registerReloadListener(
+                new SimpleSynchronousResourceReloadListener() {
+                    @Override
+                    public ResourceLocation getFabricId() {
+                        return new ResourceLocation("sgadminui", "client_resources");
+                    }
+
+                    @Override
+                    public void onResourceManagerReload(ResourceManager resourceManager) {
+                        try (InputStream in = Minecraft.getInstance().getResourceManager()
+                                .open(new ResourceLocation("intermission", "font/nanum_square_neo.ttf"))) {
+                            FontFamily font = FontFamily.createFamily(in, false);
+                            NANUM_FONT = Typeface.createTypeface(font);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                });
+
+        ClientEntityEvents.ENTITY_LOAD.register(this::requestNameSync);
+        Registry.register(BuiltInRegistries.SOUND_EVENT, SCRATCH_SOUND, SCRATCH_SOUND_EVENT);
+        ClientPlayNetworking.registerGlobalReceiver(PacketDalgonaRequest.TYPE,
+                new PacketDalgonaRequestHandler());
+        ClientPlayNetworking.registerGlobalReceiver(PacketIntermissionRequest.TYPE,
+                new PacketIntermissionRequestHandler());
+    }
+
+    private void requestNameSync(Entity entity, ClientLevel level) {
+        if (!(entity instanceof Player player)) {
+            return;
+        }
+
+        ClientPlayNetworking.send(new PacketRequestSync(player.getUUID()));
+    }
 
 }

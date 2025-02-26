@@ -4,9 +4,9 @@ import net.fabricmc.api.ModInitializer;
 
 public final class Intermission implements ModInitializer {
 
-  public static final String ID = "intermission";
+    public static final String ID = "intermission";
 
-  @Override
-  public void onInitialize() {
-  }
+    @Override
+    public void onInitialize() {
+    }
 }

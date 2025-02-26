@@ -12,26 +12,26 @@ import net.minecraft.resources.ResourceLocation;
 @AllArgsConstructor
 public final class PacketDalgonaResult implements FabricPacket {
 
-  public static final PacketType<PacketDalgonaResult> TYPE = PacketType.create(new ResourceLocation(
-      Intermission.ID, "dalgona_result"), PacketDalgonaResult::new);
+    public static final PacketType<PacketDalgonaResult> TYPE = PacketType.create(new ResourceLocation(
+            Intermission.ID, "dalgona_result"), PacketDalgonaResult::new);
 
-  private boolean success;
+    private boolean success;
 
-  public PacketDalgonaResult(FriendlyByteBuf buf) {
-    read(buf);
-  }
+    public PacketDalgonaResult(FriendlyByteBuf buf) {
+        read(buf);
+    }
 
-  private void read(FriendlyByteBuf buf) {
-    this.success = buf.readBoolean();
-  }
+    private void read(FriendlyByteBuf buf) {
+        this.success = buf.readBoolean();
+    }
 
-  @Override
-  public void write(FriendlyByteBuf buf) {
-    buf.writeBoolean(success);
-  }
+    @Override
+    public void write(FriendlyByteBuf buf) {
+        buf.writeBoolean(success);
+    }
 
-  @Override
-  public PacketType<?> getType() {
-    return TYPE;
-  }
+    @Override
+    public PacketType<?> getType() {
+        return TYPE;
+    }
 }
